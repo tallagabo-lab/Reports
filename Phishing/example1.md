@@ -13,6 +13,12 @@ The email is assessed as a phishing attempt involving impersonation, spoofing in
 - **Subject:** Missed Call Notification (implied from context)
 
 ---
+## Phishing Signals Identified
+
+-Impersonation
+-Spoofing
+-Malicious attachment
+---
 
 ## Αnalysis
 
