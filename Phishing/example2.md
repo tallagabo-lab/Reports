@@ -50,7 +50,9 @@ The embedded link (`microsoftooline.co`) is not associated with legitimate Micro
 - **Typosquatted Domain:** tbƒc.com  
 - **Suspicious URL:** https://microsoftooline.co  
 - **Return-Path:** tbfc-it@xn--tbc-n5a.com  
-- **DMARC:** none  
+- SPF: PASS (authorized sending server)
+- DKIM: PASS (signed by different domain – misaligned)
+- DMARC: NONE (no policy enforced)
 
 ---
 
