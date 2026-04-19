@@ -1,4 +1,4 @@
-# Phishing Email Analysis Report – TBFC-IT Fake Share Notification-example 2
+# Phishing Email Analysis Report – TBFC-IT Fake Share Notification
 
 ---
 
