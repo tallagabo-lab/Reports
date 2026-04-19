@@ -75,3 +75,10 @@ nt into clicking a malicious link. Interaction with the link could lead to crede
 - Report the email to the security team or SOC for further investigation  
 - Implement email filtering solutions to detect phishing attempts  
 - Ensure DMARC, SPF,DKIM policies are properly configured and enforced
+
+
+
+### Email Evidence
+![Email](phishing2_a.png)
+
+![Attachment/headers](phishing2_b.png)
