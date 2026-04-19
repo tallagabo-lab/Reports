@@ -71,3 +71,12 @@ User interaction with the attachment may lead to credential theft or malicious p
 - Dont open attachments from unknown sources  
 - Block sender domain `tbfc.com` if confirmed malicious  
 - Monitor for similar attachment patterns
+
+- ## Phishing Case 1 Analysis
+
+### Email Evidence images
+![Email 1](phishing1_a.png)
+
+![Email 2](phishing1_b.png)
+
+![Headers](phishing1_c.png)
