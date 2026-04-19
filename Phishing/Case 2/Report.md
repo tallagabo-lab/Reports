@@ -77,8 +77,3 @@ nt into clicking a malicious link. Interaction with the link could lead to crede
 - Ensure DMARC, SPF,DKIM policies are properly configured and enforced
 
 
-
-### Email Evidence
-![Email](phishing2_a.png)
-
-![Attachment/headers](phishing2_b.png)
