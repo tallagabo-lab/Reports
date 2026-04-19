@@ -1,4 +1,4 @@
-# Phishing Email Analysis Report(1st example)
+# Phishing Email Analysis Report
 
 ## Overview
 This report analyzes a suspicious email identified using the **Wareville Email Threat Inspector** from TryHackMe.  
