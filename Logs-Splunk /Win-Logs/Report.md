@@ -152,3 +152,6 @@ The combination of masquerading executable, persistence , and suspicious network
 Immediate containment and remediation actions are required.
 
 ---
+## Screenshots
+![Evidence 1](W_1.png)
+![Evidence 2](W_2.png)
