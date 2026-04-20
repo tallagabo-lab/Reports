@@ -76,4 +76,7 @@ nt into clicking a malicious link. Interaction with the link could lead to crede
 - Implement email filtering solutions to detect phishing attempts  
 - Ensure DMARC, SPF,DKIM policies are properly configured and enforced
 
+## Screenshots
+![Phishing Evidence 2A](phishing2_a.png)
 
+![Phishing Evidence 2B](phishing2_b.png)
