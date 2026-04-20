@@ -100,3 +100,9 @@ Conclusion: The Ubuntu server was compromised. The attackers gained initial acce
 
 
 ---
+## Sreenshots
+![L1](l1.png)
+
+![L2](l2.png)
+
+![L3](l3.png)
