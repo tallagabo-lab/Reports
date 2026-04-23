@@ -136,4 +136,6 @@ This report is part of hands-on practice from TryHackMe, focusing on:
 * Real-world analytical thinking
 * Tool-based intelligence gathering
 
----
+##Screenshots
+![O_1](O_1.png)
+![O_2](O_2.png)
