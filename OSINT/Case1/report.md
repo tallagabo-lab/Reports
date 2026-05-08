@@ -135,7 +135,26 @@ This report is part of hands-on practice from TryHackMe, focusing on:
 * OSINT investigations
 * Real-world analytical thinking
 * Tool-based intelligence gathering
+## 9. Screenshots / Evidence
 
-##Screenshots
+This section contains supporting visual evidence used during the investigation.
+
+---
+
+### A.1 Reverse Image Search – Circuit Identification
+
 ![O_1](O_1.png)
+
+- Identified location: Pertamina Mandalika International Street Circuit  
+- Method: Reverse image search (Google / Yandex)
+
+---
+
+### A.2 Location & Context Verification
+
 ![O_2](O_2.png)
+
+- Confirmed geolocation via Google Maps correlation  
+- Used for validating event and venue context
+
+---
