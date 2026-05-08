@@ -68,10 +68,19 @@ User interaction with the attachment may lead to credential theft or malicious p
 ---
 
 ## Screenshots
+# 9. Screenshots
+
+### A.1 Email Analysis Evidence
 ![Phishing Evidence 1](phishing1_a.png)
 
+---
+
+### A.2 Header / Spoofing Indicators
 ![Phishing Evidence 2](phishing1_b.png)
 
+---
+
+### A.3 Attachment / Payload Evidence
 ![Phishing Evidence 3](phishing1_c.png)
 
 
